@@ -5,8 +5,8 @@ function G = Fegrad(data, sigma, x, W)
 
     Tx = T(data, sigma, x);
     
-    G.x = real(N*x - ifft(sum(conj(fft(W)).*fft(data), 2)))/sigma^2;
-    G.W = Tx + log(W) + 1;
+    G.x = real(N*x - ifft(sum(conj(fft(W)).*fft(data), 2)))/sigma^2  / numel(data);
+    G.W = (Tx + log(W) + 1) / numel(data);
 
 end
 

@@ -7,10 +7,10 @@ L = 10;
 % Ground truth signal
 x_true = randn(L, 1);
 % Noise level
-sigma = 3;
+sigma = 3;  % multinomial will cause trouble if we converge to a W with zeros in it -- if sigma is large, that's less likely to happen.
 
 % Generate data
-number_of_measurements = 1e3;
+number_of_measurements = 1e5;
 data = generate_observations(x_true, number_of_measurements, sigma);
 
 %% 
@@ -23,7 +23,7 @@ problem.egrad = @(pair) Fegrad(data, sigma, pair.x, pair.W);
 % checkgradient(problem);
 % return;
 
-pair = trustregions(problem);
+pair = conjugategradient(problem);
 x_est = pair.x;
 W_est = pair.W;
 

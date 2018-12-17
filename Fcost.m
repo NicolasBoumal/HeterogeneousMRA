@@ -13,7 +13,7 @@ function f = Fcost(data, sigma, x, W)
 %     fprintf('-- check: %g --\n', norm(D, 'fro')); % should print 0 or close
 %     %-- endcheck
     
-    f = inner(W, Tx + log(W));
+    f = inner(W, Tx + log(W)) / numel(data);
 
 end
 
