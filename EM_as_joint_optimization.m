@@ -7,23 +7,25 @@ L = 10;
 % Ground truth signal
 x_true = randn(L, 1);
 % Noise level
-sigma = 3;  % multinomial will cause trouble if we converge to a W with zeros in it -- if sigma is large, that's less likely to happen.
+sigma = .1;  % multinomial will cause trouble if we converge to a W with zeros in it -- if sigma is large, that's less likely to happen. Perhaps a barrier will help?
 
 % Generate data
-number_of_measurements = 1e5;
+number_of_measurements = 1e3;
 data = generate_observations(x_true, number_of_measurements, sigma);
 
 %% 
 elements.x = euclideanfactory(L, 1);
 elements.W = multinomialfactory(L, number_of_measurements);
 problem.M = productmanifold(elements);
-problem.cost = @(pair) Fcost(data, sigma, pair.x, pair.W);
-problem.egrad = @(pair) Fegrad(data, sigma, pair.x, pair.W);
+
+lambda = 0; % barrier parameter
+problem.cost = @(pair) Fcost(data, sigma, pair.x, pair.W, lambda);
+problem.egrad = @(pair) Fegrad(data, sigma, pair.x, pair.W, lambda);
 
 % checkgradient(problem);
 % return;
 
-pair = conjugategradient(problem);
+pair = trustregions(problem);
 x_est = pair.x;
 W_est = pair.W;
 

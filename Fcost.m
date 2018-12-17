@@ -1,4 +1,4 @@
-function f = Fcost(data, sigma, x, W)
+function f = Fcost(data, sigma, x, W, lambda)
 % See NB 37, Dec. 17, 2018
 
     Tx = T(data, sigma, x);
@@ -13,7 +13,18 @@ function f = Fcost(data, sigma, x, W)
 %     fprintf('-- check: %g --\n', norm(D, 'fro')); % should print 0 or close
 %     %-- endcheck
     
-    f = inner(W, Tx + log(W)) / numel(data);
+    f = inner(W, Tx + log(W));
+    
+    % Barrier
+    if ~exist('lambda', 'var') || isempty(lambda)
+        lambda = 0;
+    end
+    if lambda ~= 0
+        f = f - lambda*sum(sum(log(W)));
+    end
+    
+    % Normalization
+    f = f / numel(data);
 
 end
 

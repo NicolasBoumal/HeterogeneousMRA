@@ -1,12 +1,24 @@
-function G = Fegrad(data, sigma, x, W)
+function G = Fegrad(data, sigma, x, W, lambda)
 % See NB 37, Dec. 17, 2018
 
     N = size(data, 2);
 
     Tx = T(data, sigma, x);
     
-    G.x = real(N*x - ifft(sum(conj(fft(W)).*fft(data), 2)))/sigma^2  / numel(data);
-    G.W = (Tx + log(W) + 1) / numel(data);
+    G.x = real(N*x - ifft(sum(conj(fft(W)).*fft(data), 2)))/sigma^2;
+    G.W = Tx + log(W) + 1;
+    
+    % Barrier
+    if ~exist('lambda', 'var') || isempty(lambda)
+        lambda = 0;
+    end
+    if lambda ~= 0
+        G.W = G.W - lambda./W;
+    end
+    
+    % Normalization
+    G.x = G.x / numel(data);
+    G.W = G.W / numel(data);
 
 end
 
